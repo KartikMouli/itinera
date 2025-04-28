@@ -6,7 +6,7 @@ import { PopularPlacesCarousel } from "@/components/popular-places-carousel"
 
 export default function DashboardPage() {
   return (
-    <div className="w-full space-y-4 p-4 md:space-y-6 md:p-6">
+    <div className="w-full space-y-4 md:space-y-6 pb-16">
       <div className="space-y-1">
         <h1 className="text-2xl font-bold md:text-3xl">Welcome back!</h1>
         <p className="text-sm text-muted-foreground md:text-base">

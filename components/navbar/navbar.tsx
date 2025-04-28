@@ -8,15 +8,16 @@ import {
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+import { ThemeToggle } from "../theme-toggle.tsx/theme-toggle"
 
 const Navbar = () => {
     return (
-        <nav className="sticky top-0 z-50 backdrop-blur">
-            <div className="flex h-16 items-center px-3 rounded-full">
-                <div className="flex items-center gap-4 ml-auto">
+            <nav className="flex h-16 items-center rounded-full">
+                <ThemeToggle />
+                <div className="flex items-center ml-auto">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="hover:cursor-pointer rounded-full">
+                            <Button variant="ghost" className="hover:cursor-pointer rounded-full">
                                 <Avatar>
                                     <AvatarImage src="https://github.com/shadcn.png" />
                                     <AvatarFallback>
@@ -41,8 +42,8 @@ const Navbar = () => {
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
-            </div>
-        </nav>
+            </nav>
+        
     )
 }
 

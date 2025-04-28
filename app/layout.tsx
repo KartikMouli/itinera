@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${outfit.className} font-outfit bg-gradient-to-b from-slate-50 via-white to-slate-50`} suppressHydrationWarning>
+      <body className={`${outfit.className} font-outfit`} suppressHydrationWarning>
         {children}
       </body>
     </html>

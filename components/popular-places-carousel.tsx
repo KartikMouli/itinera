@@ -1,10 +1,20 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { MapPin, ChevronLeft, ChevronRight } from "lucide-react"
+import { MapPin } from "lucide-react"
 import Image from "next/image"
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+} from "@/components/ui/carousel"
+import React from "react"
+import Autoplay from "embla-carousel-autoplay"
+
+
+
 
 const popularPlaces = [
     {
@@ -35,35 +45,20 @@ const popularPlaces = [
 ]
 
 export function PopularPlacesCarousel() {
-    const [currentIndex, setCurrentIndex] = useState(0)
-
-    const nextSlide = () => {
-        setCurrentIndex((prev) => (prev + 1) % popularPlaces.length)
-    }
-
-    const prevSlide = () => {
-        setCurrentIndex((prev) => (prev - 1 + popularPlaces.length) % popularPlaces.length)
-    }
-
-    useEffect(() => {
-        const timer = setInterval(nextSlide, 3000)
-        return () => clearInterval(timer)
-    }, [])
-
     return (
         <Card className="relative overflow-hidden p-2">
-            <div className="relative h-[500px] w-full overflow-hidden rounded-lg">
-                <div
-                    className="flex h-full transition-transform duration-900 ease-in-out"
-                    style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-                >
+            <Carousel
+                className="w-full"
+                plugins={[
+                    Autoplay({
+                        delay: 5000,
+                    }),
+                ]}
+            >
+                <CarouselContent>
                     {popularPlaces.map((place) => (
-                        <div
-                            key={place.name}
-                            className="relative h-full min-w-full"
-                        >
-                            <div className="relative h-full w-full">
-                                <div className="absolute inset-0 bg-black/20" />
+                        <CarouselItem key={place.name}>
+                            <div className="relative h-[500px] w-full overflow-hidden rounded-lg">
                                 <Image
                                     src={place.image}
                                     alt={place.name}
@@ -71,7 +66,7 @@ export function PopularPlacesCarousel() {
                                     className="object-cover"
                                     priority
                                 />
-                                <div className="absolute inset-0 flex flex-col justify-end p-2 text-white">
+                                <div className="absolute inset-0 flex flex-col justify-end p-2">
                                     <div className="flex items-center gap-1">
                                         <MapPin className="size-3" />
                                         <span className="text-[10px]">{place.region}</span>
@@ -79,38 +74,12 @@ export function PopularPlacesCarousel() {
                                     <h3 className="text-sm font-bold">{place.name}</h3>
                                 </div>
                             </div>
-                        </div>
+                        </CarouselItem>
                     ))}
-                </div>
-            </div>
-
-            <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
-                {popularPlaces.map((_, index) => (
-                    <button
-                        key={index}
-                        className={`size-1 rounded-full transition-colors ${index === currentIndex ? "bg-primary" : "bg-gray-300"
-                            }`}
-                        onClick={() => setCurrentIndex(index)}
-                    />
-                ))}
-            </div>
-
-            <Button
-                variant="ghost"
-                size="icon"
-                className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
-                onClick={prevSlide}
-            >
-                <ChevronLeft className="size-3" />
-            </Button>
-            <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
-                onClick={nextSlide}
-            >
-                <ChevronRight className="size-3" />
-            </Button>
+                </CarouselContent>
+                <CarouselPrevious className="left-2" />
+                <CarouselNext className="right-2" />
+            </Carousel>
         </Card>
     )
 } 
