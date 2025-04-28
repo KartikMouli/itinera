@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  username      String    @unique
+  bio           String?
+  location      String?
+  website       String?
+  avatarUrl     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  googleId      String?   @unique
+  searches      TripSearch[]
+  // Add other fields as needed
+}
+
+model TripSearch {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  currentLocation String
+  destination     String
+  budget          String?
+  numberOfDays    String?
+  modeOfTravel    String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  isSaved         Boolean   @default(false)
+  searchResults   Json?     // To store Gemini API results
+} 

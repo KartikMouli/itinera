@@ -3,6 +3,9 @@ import Navbar from "@/components/navbar/navbar"
 import { ThemeProvider } from "@/components/theme-provider/theme-provider"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { cookies } from "next/headers"
+import { Heart } from "lucide-react"
+import Link from "next/link"
+import Footer from "@/components/footer/footer"
 
 export default async function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
     const cookieStore = await cookies()
@@ -25,6 +28,7 @@ export default async function AuthenticatedLayout({ children }: { children: Reac
                         <main className="flex-1 px-12">
                             {children}
                         </main>
+                        <Footer />
                     </div>
                 </div>
             </SidebarProvider>

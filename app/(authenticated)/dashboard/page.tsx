@@ -19,7 +19,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid w-full gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="w-full">
+        <Card className="w-full border-border/50 bg-card shadow-md hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Recent Searches</CardTitle>
             <Search className="size-4 text-muted-foreground" />
@@ -31,7 +31,7 @@ export default function DashboardPage() {
             </p>
           </CardContent>
         </Card>
-        <Card className="w-full">
+        <Card className="w-full border-border/50 bg-card shadow-md hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Saved Trips</CardTitle>
             <MapPin className="size-4 text-muted-foreground" />
@@ -43,7 +43,7 @@ export default function DashboardPage() {
             </p>
           </CardContent>
         </Card>
-        <Card className="w-full">
+        <Card className="w-full border-border/50 bg-card shadow-md hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Popular Routes</CardTitle>
             <History className="size-4 text-muted-foreground" />
@@ -55,7 +55,7 @@ export default function DashboardPage() {
             </p>
           </CardContent>
         </Card>
-        <Card className="w-full">
+        <Card className="w-full border-border/50 bg-card shadow-md hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Quick Search</CardTitle>
             <Clock className="size-4 text-muted-foreground" />
@@ -69,7 +69,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid w-full gap-4 sm:grid-cols-1 lg:grid-cols-7">
-        <Card className="w-full lg:col-span-4">
+        <Card className="w-full lg:col-span-4 border-border/50 bg-card shadow-md hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle>Recent Searches</CardTitle>
           </CardHeader>
@@ -82,25 +82,25 @@ export default function DashboardPage() {
               ].map((trip, i) => (
                 <div
                   key={i}
-                  className="flex w-full flex-col gap-2 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex w-full flex-col gap-2 rounded-lg border border-border/50 bg-card/80 p-3 sm:flex-row sm:items-center sm:justify-between hover:bg-card/90 transition-colors"
                 >
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">
+                  <div className="space-y-1 ">
+                    <p className="text-sm font-medium ">
                       {trip.from} → {trip.to}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {trip.date}
                     </p>
                   </div>
-                  <Button variant="outline" size="sm" asChild className="w-full sm:w-auto">
-                    <Link href="/dashboard/search">Search Again</Link>
+                  <Button variant="secondary" size="sm" asChild className="w-full sm:w-auto">
+                    <Link href="/dashboard/search">View Again</Link>
                   </Button>
                 </div>
               ))}
             </div>
           </CardContent>
         </Card>
-        <Card className="w-full lg:col-span-3">
+        <Card className="w-full lg:col-span-3 border-border/50 bg-card shadow-md hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle>Popular Destinations</CardTitle>
           </CardHeader>
@@ -111,7 +111,10 @@ export default function DashboardPage() {
                 { city: "Goa", state: "Goa", searches: "2.1k" },
                 { city: "Kerala", state: "Kerala", searches: "1.8k" },
               ].map((destination, i) => (
-                <div key={i} className="flex w-full flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                <div 
+                  key={i} 
+                  className="flex w-full flex-col gap-1 sm:flex-row sm:items-center sm:justify-between p-2 rounded-lg bg-card/80 hover:bg-card/90 transition-colors"
+                >
                   <div className="space-y-0.5">
                     <p className="text-sm font-medium">{destination.city}</p>
                     <p className="text-xs text-muted-foreground">
