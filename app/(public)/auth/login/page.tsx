@@ -1,5 +1,6 @@
 import { LoginForm } from "@/components/login-form"
 import { GalleryVerticalEnd } from "lucide-react"
+import Image from "next/image"
 
 export default function LoginPage() {
   return (
@@ -9,6 +10,16 @@ export default function LoginPage() {
         <div className="relative z-20 flex items-center text-lg font-medium">
           <GalleryVerticalEnd className="size-6" />
           <span className="ml-2">Itinera</span>
+        </div>
+        <div className="absolute inset-0">
+          <Image
+            src="/images/rajasthan.png"
+            alt="India Travel"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/30" />
         </div>
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">
