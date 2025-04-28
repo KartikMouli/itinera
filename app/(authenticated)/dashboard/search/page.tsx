@@ -21,14 +21,38 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { DateRangePicker } from "@/components/date-range-picker/date-range-picker"
 import { DateRange } from "react-day-picker"
+import { Combobox } from "@/components/combbox/combbox"
+import Link from "next/link"
 
 // Indian cities for autocomplete
 const indianCities = [
-    "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai", "Kolkata",
-    "Pune", "Ahmedabad", "Jaipur", "Lucknow", "Kochi", "Goa",
-    "Varanasi", "Agra", "Udaipur", "Jodhpur", "Shimla", "Manali",
-    "Darjeeling", "Mysore", "Pondicherry", "Amritsar", "Rishikesh",
-    "Kerala", "Ladakh", "Andaman", "Sikkim"
+    { value: "mumbai", label: "Mumbai" },
+    { value: "delhi", label: "Delhi" },
+    { value: "bangalore", label: "Bangalore" },
+    { value: "hyderabad", label: "Hyderabad" },
+    { value: "chennai", label: "Chennai" },
+    { value: "kolkata", label: "Kolkata" },
+    { value: "pune", label: "Pune" },
+    { value: "ahmedabad", label: "Ahmedabad" },
+    { value: "jaipur", label: "Jaipur" },
+    { value: "lucknow", label: "Lucknow" },
+    { value: "kochi", label: "Kochi" },
+    { value: "goa", label: "Goa" },
+    { value: "varanasi", label: "Varanasi" },
+    { value: "agra", label: "Agra" },
+    { value: "udaipur", label: "Udaipur" },
+    { value: "jodhpur", label: "Jodhpur" },
+    { value: "shimla", label: "Shimla" },
+    { value: "manali", label: "Manali" },
+    { value: "darjeeling", label: "Darjeeling" },
+    { value: "mysore", label: "Mysore" },
+    { value: "pondicherry", label: "Pondicherry" },
+    { value: "amritsar", label: "Amritsar" },
+    { value: "rishikesh", label: "Rishikesh" },
+    { value: "kerala", label: "Kerala" },
+    { value: "ladakh", label: "Ladakh" },
+    { value: "andaman", label: "Andaman" },
+    { value: "sikkim", label: "Sikkim" }
 ]
 
 // Define the form schema
@@ -78,6 +102,14 @@ const savedSearches = [
         modeOfTravel: "plane",
         date: "2024-03-05",
     },
+]
+
+const travelModes = [
+    { value: "plane", label: "Plane" },
+    { value: "train", label: "Train" },
+    { value: "car", label: "Car" },
+    { value: "bus", label: "Bus" },
+    { value: "bike", label: "Bike" },
 ]
 
 export default function SearchPage() {
@@ -145,20 +177,12 @@ export default function SearchPage() {
                                         <FormItem>
                                             <FormLabel>Current Location</FormLabel>
                                             <FormControl>
-                                                <div className="relative">
-                                                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                                                    <Input 
-                                                        placeholder="Where are you now?" 
-                                                        className="pl-10" 
-                                                        {...field}
-                                                        list="indian-cities"
-                                                    />
-                                                    <datalist id="indian-cities">
-                                                        {indianCities.map((city) => (
-                                                            <option key={city} value={city} />
-                                                        ))}
-                                                    </datalist>
-                                                </div>
+                                                <Combobox
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    options={indianCities}
+                                                    placeholder="Where are you now?"
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -172,15 +196,12 @@ export default function SearchPage() {
                                         <FormItem>
                                             <FormLabel>Destination</FormLabel>
                                             <FormControl>
-                                                <div className="relative">
-                                                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                                                    <Input 
-                                                        placeholder="Where do you want to go?" 
-                                                        className="pl-10" 
-                                                        {...field}
-                                                        list="indian-cities"
-                                                    />
-                                                </div>
+                                                <Combobox
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    options={indianCities}
+                                                    placeholder="Where do you want to go?"
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -237,25 +258,18 @@ export default function SearchPage() {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Mode of Travel (Optional)</FormLabel>
-                                            <Select 
-                                                onValueChange={field.onChange} 
-                                                defaultValue={field.value}
-                                                value={field.value}
-                                            >
-                                                <FormControl>
-                                                    <SelectTrigger className="w-full">
-                                                        <SelectValue placeholder="Select travel mode" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="clear">Clear selection</SelectItem>
-                                                    <SelectItem value="plane">Plane</SelectItem>
-                                                    <SelectItem value="train">Train</SelectItem>
-                                                    <SelectItem value="car">Car</SelectItem>
-                                                    <SelectItem value="bus">Bus</SelectItem>
-                                                    <SelectItem value="bike">Bike</SelectItem>
-                                                </SelectContent>
-                                            </Select>
+                                            <FormControl>
+                                                <Combobox
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    options={travelModes}
+                                                    placeholder="Select travel mode"
+                                                />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Choose your preferred mode of transportation
+                                            </FormDescription>
+                                            <FormMessage />
                                         </FormItem>
                                     )}
                                 />
@@ -284,10 +298,12 @@ export default function SearchPage() {
                                 Your previous Indian travel searches
                             </CardDescription>
                         </div>
-                        <Button variant="outline" size="sm">
-                            <History className="mr-2 h-4 w-4" />
-                            View All
-                        </Button>
+                        <Link href="/dashboard/search/all">
+                            <Button variant="outline" size="sm">
+                                <History className="mr-2 h-4 w-4" />
+                                View All
+                            </Button>
+                        </Link>
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -318,9 +334,11 @@ export default function SearchPage() {
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <Badge variant="secondary">{search.date}</Badge>
-                                        <Button variant="ghost" size="icon">
-                                            <Plus className="h-4 w-4" />
-                                        </Button>
+                                        <Link href={`/dashboard/search/${search.id}`}>
+                                            <Button variant="ghost" size="icon">
+                                                <Plus className="h-4 w-4" />
+                                            </Button>
+                                        </Link>
                                     </div>
                                 </div>
                             </Card>

@@ -1,4 +1,4 @@
-import { Home, Search, MapPin, Settings, History, User, LogOut, Inbox, Calendar, ChevronUp, User2 } from "lucide-react"
+import { Home, Search, MapPin, Settings, History, User, LogOut, Inbox, Calendar, ChevronUp, User2, ChevronDown } from "lucide-react"
 
 import {
     Sidebar,
@@ -11,10 +11,10 @@ import {
     SidebarMenuItem,
     SidebarHeader,
     SidebarFooter,
-    SidebarSeparator,
 } from "@/components/ui/sidebar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
-import { cn } from "@/lib/utils"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible"
+
 
 // Main navigation items
 const mainItems = [
@@ -63,7 +63,7 @@ const userItems = [
 
 export function AppSidebar() {
     return (
-        <Sidebar>
+        <Sidebar variant="floating">
             <SidebarHeader>
                 <div className="flex items-center gap-2">
                     <MapPin className="size-5" />
@@ -78,8 +78,8 @@ export function AppSidebar() {
                             {mainItems.map((item) => (
                                 <SidebarMenuItem key={item.title}>
                                     <SidebarMenuButton asChild>
-                                        <a href={item.url}>
-                                            <item.icon />
+                                        <a href={item.url} className="flex items-center gap-2">
+                                            <item.icon className="size-5" />
                                             <span>{item.title}</span>
                                         </a>
                                     </SidebarMenuButton>
@@ -88,28 +88,70 @@ export function AppSidebar() {
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
+
+                <Collapsible defaultOpen className="group/collapsible">
+                    <SidebarGroup>
+                        <SidebarGroupLabel asChild>
+                            <CollapsibleTrigger className="flex w-full items-center justify-between">
+                                <span>Recent Trips</span>
+                                <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                            </CollapsibleTrigger>
+                        </SidebarGroupLabel>
+                        <CollapsibleContent>
+                            <SidebarGroupContent>
+                                <SidebarMenu>
+                                    <SidebarMenuItem>
+                                        <SidebarMenuButton asChild>
+                                            <a href="/dashboard/search/1" className="flex items-center gap-2">
+                                                <MapPin className="size-5" />
+                                                <span>Mumbai → Goa</span>
+                                            </a>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                    <SidebarMenuItem>
+                                        <SidebarMenuButton asChild>
+                                            <a href="/dashboard/search/2" className="flex items-center gap-2">
+                                                <MapPin className="size-5" />
+                                                <span>Delhi → Manali</span>
+                                            </a>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                    <SidebarMenuItem>
+                                        <SidebarMenuButton asChild>
+                                            <a href="/dashboard/search/3" className="flex items-center gap-2">
+                                                <MapPin className="size-5" />
+                                                <span>Bangalore → Kerala</span>
+                                            </a>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                </SidebarMenu>
+                            </SidebarGroupContent>
+                        </CollapsibleContent>
+                    </SidebarGroup>
+                </Collapsible>
             </SidebarContent>
 
-            <SidebarFooter>
+            <SidebarFooter className="mt-auto">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <SidebarMenuButton>
-                                    <User2 /> Username
+                                <SidebarMenuButton className="flex items-center gap-2 w-full">
+                                    <User2 className="size-5" />
+                                    <span>Username</span>
                                     <ChevronUp className="ml-auto" />
                                 </SidebarMenuButton>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
                                 side="top"
+                                align="start"
                                 style={{
                                     width: "var(--radix-popper-anchor-width)",
                                 }}
-                                
                             >
                                 {userItems.map((item) => (
-                                    <DropdownMenuItem key={item.title}>
-                                        <item.icon />
+                                    <DropdownMenuItem key={item.title} className="flex items-center gap-2">
+                                        <item.icon className="size-4" />
                                         <span>{item.title}</span>
                                     </DropdownMenuItem>
                                 ))}
