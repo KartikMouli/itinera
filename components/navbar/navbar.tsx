@@ -9,7 +9,7 @@ import {
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { ThemeToggle } from "../theme-toggle.tsx/theme-toggle"
-import Image from "next/image"
+
 
 const Navbar = () => {
     return (
