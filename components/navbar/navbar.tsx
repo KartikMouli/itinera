@@ -9,15 +9,19 @@ import {
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { ThemeToggle } from "../theme-toggle.tsx/theme-toggle"
+import Image from "next/image"
 
 const Navbar = () => {
     return (
-            <nav className="flex h-16 items-center rounded-full">
+            <nav className="flex h-16 items-center rounded-full gap-4">
+                <Link href="/dashboard">
+                    <span className="hover:underline">Dashboard</span>
+                </Link>
                 <ThemeToggle />
                 <div className="flex items-center ml-auto">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="hover:cursor-pointer rounded-full">
+                            <Button variant="ghost" size="icon" className="hover:cursor-pointer rounded-full">
                                 <Avatar>
                                     <AvatarImage src="https://github.com/shadcn.png" />
                                     <AvatarFallback>
