@@ -1,4 +1,6 @@
-import { User, LogOut, Info, Mail, FileText } from "lucide-react"
+"use client"
+
+import { User, LogOut, Info, Mail, FileText, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
@@ -10,9 +12,24 @@ import {
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { ThemeToggle } from "../theme-toggle.tsx/theme-toggle"
-
+import { authClient } from "@/lib/auth-client"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 const Navbar = () => {
+    const router = useRouter()
+
+    const handleSignOut = async () => {
+        await authClient.signOut({
+            fetchOptions: {
+                onSuccess: () => {
+                    router.push("/auth/login"); 
+                },
+            },
+        });
+    }
+
+
     return (
         <nav className="flex h-16 items-center rounded-full gap-4">
             <Link href="/dashboard">
@@ -39,7 +56,7 @@ const Navbar = () => {
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                            <Link href="/auth/signout" className="flex items-center gap-2">
+                            <Link href="#" onClick={handleSignOut} className="flex items-center gap-2">
                                 <LogOut className="size-4" />
                                 Sign Out
                             </Link>
@@ -54,13 +71,13 @@ const Navbar = () => {
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                            <Link href="/auth/signout" className="flex items-center gap-2">
+                            <Link href="#" className="flex items-center gap-2">
                                 <Mail className="size-4" />
                                 Contact
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                            <Link href="/auth/signout" className="flex items-center gap-2">
+                            <Link href="#" className="flex items-center gap-2">
                                 <FileText className="size-4" />
                                 Terms and Conditions
                             </Link>

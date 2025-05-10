@@ -1,3 +1,5 @@
+"use client"
+
 import { Home, Search, MapPin, Settings, History, User, LogOut, Inbox, Calendar, ChevronUp, User2, ChevronDown } from "lucide-react"
 
 import {
@@ -14,6 +16,8 @@ import {
 } from "@/components/ui/sidebar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible"
+import { useRouter } from "next/navigation"
+import { authClient } from "@/lib/auth-client"
 
 
 // Main navigation items
@@ -40,28 +44,41 @@ const mainItems = [
     },
 ]
 
-// User navigation items
-const userItems = [
-    {
-        title: "Profile",
-        url: "/dashboard/profile",
-        icon: User,
-    },
-    {
-        title: "Settings",
-        url: "/dashboard/settings",
-        icon: Settings,
-    },
-    {
-        title: "Sign Out",
-        url: "/auth/signout",
-        icon: LogOut,
-    },
-]
-
-
-
 export function AppSidebar() {
+    const router = useRouter()
+
+    const handleSignOut = async () => {
+        await authClient.signOut({
+            fetchOptions: {
+                onSuccess: () => {
+                    router.push("/auth/login");
+                },
+            },
+        });
+    }
+
+    // User navigation items
+    const userItems = [
+        {
+            title: "Profile",
+            url: "/dashboard/profile",
+            icon: User,
+        },
+        {
+            title: "Settings",
+            url: "/dashboard/settings",
+            icon: Settings,
+        },
+        {
+            title: "Sign Out",
+            url: "#",
+            icon: LogOut,
+            onClick: () => {
+                handleSignOut()
+            }
+        },
+    ]
+
     return (
         <Sidebar variant="floating">
             <SidebarHeader>
@@ -150,7 +167,7 @@ export function AppSidebar() {
                                 }}
                             >
                                 {userItems.map((item) => (
-                                    <DropdownMenuItem key={item.title} className="flex items-center gap-2">
+                                    <DropdownMenuItem key={item.title} className="flex items-center gap-2" onClick={item.onClick}>
                                         <item.icon className="size-4" />
                                         <span>{item.title}</span>
                                     </DropdownMenuItem>

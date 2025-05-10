@@ -1,8 +1,12 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
 }
 
 datasource db {
@@ -10,102 +14,62 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ========== AUTHENTICATION ==========
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-  @@map("accounts")
+  @@unique([email])
+  @@map("user")
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("sessions")
+  @@unique([token])
+  @@map("session")
 }
 
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  preferences   Json?     // Theme, language preferences
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
 
-  // Relations
-  accounts      Account[]
-  sessions      Session[]
-  trips         Trip[]
-
-  @@map("users")
+  @@map("account")
 }
 
-// ========== TRIP MANAGEMENT ==========
-model Trip {
-  id          String     @id @default(cuid())
-  title       String
-  description String?
-  status      TripStatus @default(PLANNING)
-  startDate   DateTime
-  endDate     DateTime
-  budget      Float
-  currency    String     @default("INR")
-  fromCity    String     // Starting location
-  toCity      String     // Destination
-  mode        TravelMode // Mode of travel
-  
-  // Relations
-  userId      String
-  user        User       @relation(fields: [userId], references: [id])
-  itinerary   Itinerary? // One-to-one relation with itinerary
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
 
-  @@map("trips")
-}
-
-model Itinerary {
-  id          String   @id @default(cuid())
-  content     String   @db.Text // Gemini-generated itinerary content
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  // Relations
-  tripId      String   @unique
-  trip        Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
-
-  @@map("itineraries")
-}
-
-// ========== ENUMS ==========
-enum TripStatus {
-  PLANNING
-  UPCOMING
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
-}
-
-enum TravelMode {
-  FLIGHT
-  TRAIN
-  BUS
-  CAR
-  BIKE
-  WALK
+  @@map("verification")
 }

@@ -3,13 +3,15 @@ import Navbar from "@/components/navbar/navbar"
 import { ThemeProvider } from "@/components/theme-provider/theme-provider"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { cookies } from "next/headers"
-import { Heart } from "lucide-react"
-import Link from "next/link"
 import Footer from "@/components/footer/footer"
+import { Toaster } from "@/components/ui/sonner"
+
+
 
 export default async function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
     const cookieStore = await cookies()
     const defaultOpen = cookieStore.get("sidebar_state")?.value === "true"
+
     return (
         <ThemeProvider
             attribute="class"
