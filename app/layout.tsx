@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/theme-provider/theme-provider";
 
 
-const outfit = Outfit({ 
+const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
 });
@@ -22,8 +23,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${outfit.className} font-outfit`} suppressHydrationWarning>
-        {children}
-        <Toaster position="top-right" />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <Toaster position="top-right" />
+        </ThemeProvider>
       </body>
     </html>
   );

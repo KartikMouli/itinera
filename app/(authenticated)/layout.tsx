@@ -1,10 +1,9 @@
 import { AppSidebar } from "@/components/app-sidebar/app-sidebar"
 import Navbar from "@/components/navbar/navbar"
-import { ThemeProvider } from "@/components/theme-provider/theme-provider"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { cookies } from "next/headers"
 import Footer from "@/components/footer/footer"
-import { Toaster } from "@/components/ui/sonner"
+
 
 
 
@@ -13,12 +12,6 @@ export default async function AuthenticatedLayout({ children }: { children: Reac
     const defaultOpen = cookieStore.get("sidebar_state")?.value === "true"
 
     return (
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-        >
             <SidebarProvider defaultOpen={defaultOpen}>
                 <div className="flex min-h-screen w-full bg-background text-foreground">
                     <AppSidebar />
@@ -34,6 +27,6 @@ export default async function AuthenticatedLayout({ children }: { children: Reac
                     </div>
                 </div>
             </SidebarProvider>
-        </ThemeProvider>
+
     )
 } 

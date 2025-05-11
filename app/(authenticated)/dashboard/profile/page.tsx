@@ -196,7 +196,7 @@ export default function ProfilePage() {
     // Loading state
     if (isFetching) {
         return (
-            <div className="container max-w-2xl mx-auto py-8 px-4 flex items-center justify-center">
+            <div className="container max-w-2xl mx-auto py-8 px-4 flex items-center justify-center min-h-[calc(100vh-10rem)]">
                 <Loader className="h-8 w-8 animate-spin" />
             </div>
         )

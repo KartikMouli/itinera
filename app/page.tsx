@@ -1,3 +1,4 @@
+'use client'
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -5,8 +6,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Heart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+    const router = useRouter();
     return (
         <main className="min-h-screen bg-gradient-to-b from-background to-muted/20">
             {/* Hero Section */}
@@ -31,7 +34,7 @@ export default function Home() {
                         Build, personalize, and optimize your Indian adventures with our free AI trip planner.
                         Designed for spiritual journeys, cultural explorations, and everyday discoveries.
                     </p>
-                    <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-black font-semibold">
+                    <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-black font-semibold" onClick={() => router.push('/auth/login')}>
                         Create a new trip
                     </Button>
                 </div>
