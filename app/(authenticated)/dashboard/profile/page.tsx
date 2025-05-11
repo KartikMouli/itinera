@@ -2,6 +2,7 @@
 
 // React and Next.js imports
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 
 // Form handling
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -72,6 +73,7 @@ export default function ProfilePage() {
     // Auth
     const { data: session } = authClient.useSession()
     const userId = session?.user?.id
+    const router = useRouter()
 
     // Form setup
     const form = useForm<ProfileFormValues>({
@@ -182,6 +184,13 @@ export default function ProfilePage() {
                 updateFormWithProfileData(userProfile)
                 setTempImageFile(null)
                 toast.success('Profile updated successfully')
+                
+                // Refresh the current page to get fresh session data
+                router.refresh()
+                // Small delay to ensure the toast is visible before refresh
+                setTimeout(() => {
+                    window.location.reload()
+                }, 1000)
             }
         } catch (error) {
             console.error('Error updating profile:', error)
@@ -274,7 +283,7 @@ export default function ProfilePage() {
                                     <FormItem>
                                         <FormLabel>Email</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="john@example.com" {...field} />
+                                            <Input placeholder="john@example.com" disabled={true} {...field} />
                                         </FormControl>
                                         <FormDescription>
                                             Your email address.
