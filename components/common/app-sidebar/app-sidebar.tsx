@@ -59,7 +59,7 @@ export function AppSidebar() {
             if (!session?.user?.id) return;
 
             try {
-                const response = await axios.get(`/api/trips/recent?userId=${session.user.id}`);
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/trips/recent?userId=${session.user.id}`);
                 if (response.status === 200) {
                     setRecentTrips(response.data);
                 }

@@ -59,14 +59,18 @@ export function TripDetails({ tripId }: { tripId: string }) {
             }
 
             try {
-                const response = await axios.get(`/api/trips/${tripId}?userId=${session.user.id}`);
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/trips/${tripId}?userId=${session.user.id}`);
                 if (response.status === 200) {
                     setTrip(response.data);
                 } else {
                     setError('Failed to fetch trip details');
                 }
-            } catch (err) {
-                setError('Failed to fetch trip details');
+            } catch (error: unknown) {
+                if (axios.isAxiosError(error)) {
+                    setError(error.response?.data?.error || 'Failed to fetch trip details');
+                } else {
+                    setError('Failed to fetch trip details');
+                }
             } finally {
                 setIsLoading(false);
             }

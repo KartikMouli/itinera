@@ -58,14 +58,18 @@ function TripsList() {
             }
 
             try {
-                const response = await axios.get(`/api/trips?userId=${session.user.id}`);
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/trips?userId=${session.user.id}`);
                 if (response.status === 200) {
                     setTrips(response.data);
                 } else {
                     setError('Failed to fetch trips');
                 }
-            } catch (err) {
-                setError('Failed to fetch trips');
+            } catch (error: unknown) {
+                if (axios.isAxiosError(error)) {
+                    setError(error.response?.data?.error || 'Failed to fetch trips');
+                } else {
+                    setError('Failed to fetch trips');
+                }
             } finally {
                 setIsLoading(false);
             }

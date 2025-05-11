@@ -87,7 +87,7 @@ export default function ProfilePage() {
         if (!userId) return
         
         try {
-            const response = await axios.get<{ userProfile: { user: ProfileData, bio?: string, location?: string, website?: string } }>('/api/profile', {
+            const response = await axios.get<{ userProfile: { user: ProfileData, bio?: string, location?: string, website?: string } }>(`${process.env.NEXT_PUBLIC_API_URL}/profile`, {
                 params: { userId }
             })
             
@@ -166,7 +166,7 @@ export default function ProfilePage() {
             }
 
             const response = await axios.post<{ userProfile: { user: ProfileData, bio?: string, location?: string, website?: string } }>(
-                '/api/profile', 
+                `${process.env.NEXT_PUBLIC_API_URL}/profile`, 
                 formData,
                 { headers: { 'Content-Type': 'multipart/form-data' } }
             )

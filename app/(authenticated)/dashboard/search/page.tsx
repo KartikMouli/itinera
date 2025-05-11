@@ -81,7 +81,7 @@ export default function SearchPage() {
 
 
 
-            const response = await axios.post("/api/trips/search", formattedData, {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/trips/search`, formattedData, {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${sessionData.session.token}`
