@@ -25,7 +25,12 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
+  username        String?
+  displayUsername String?
+  UserProfile     UserProfile[]
+
   @@unique([email])
+  @@unique([username])
   @@map("user")
 }
 
@@ -72,4 +77,19 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+// Add a new table for user profile information
+model UserProfile {
+  id     String @id
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  location       String?
+  website        String?
+  bio            String?
+  createdAt      DateTime
+  updatedAt      DateTime
+
+  @@map("user_profile")
 }

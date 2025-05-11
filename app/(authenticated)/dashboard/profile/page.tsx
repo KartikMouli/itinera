@@ -1,9 +1,14 @@
 "use client"
 
-import { useState } from "react"
+// React and Next.js imports
+import { useEffect, useState } from "react"
+
+// Form handling
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+
+// UI Components
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -18,9 +23,14 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Camera, Loader2 } from "lucide-react"
+import { Camera, Loader, Loader2 } from "lucide-react"
 
-// Define the form schema
+// Auth and API
+import { authClient } from "@/lib/auth-client"
+import axios from "axios"
+import { toast } from "sonner"
+
+// Types
 const profileFormSchema = z.object({
     username: z.string().min(2, {
         message: "Username must be at least 2 characters.",
@@ -38,10 +48,32 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
-export default function ProfilePage() {
-    const [isLoading, setIsLoading] = useState(false)
-    const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+interface ProfileData {
+    username: string
+    email: string
+    name: string
+    bio?: string
+    location?: string
+    website?: string
+    image?: string
+}
 
+// Constants
+const MAX_FILE_SIZE = 1 * 1024 * 1024 // 1MB
+const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png']
+
+export default function ProfilePage() {
+    // State
+    const [isLoading, setIsLoading] = useState(false)
+    const [isFetching, setIsFetching] = useState(true)
+    const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+    const [tempImageFile, setTempImageFile] = useState<File | null>(null)
+
+    // Auth
+    const { data: session } = authClient.useSession()
+    const userId = session?.user?.id
+
+    // Form setup
     const form = useForm<ProfileFormValues>({
         resolver: zodResolver(profileFormSchema),
         defaultValues: {
@@ -54,28 +86,120 @@ export default function ProfilePage() {
         },
     })
 
-    async function onSubmit(data: ProfileFormValues) {
+    // Fetch profile data
+    const fetchProfile = async () => {
+        if (!userId) return
+        
+        try {
+            const response = await axios.get<{ userProfile: { user: ProfileData, bio?: string, location?: string, website?: string } }>('/api/profile', {
+                params: { userId }
+            })
+            
+            if (response.status !== 200) throw new Error('Failed to fetch profile')
+            
+            const { userProfile } = response.data
+            if (userProfile) {
+                updateFormWithProfileData(userProfile)
+            }
+        } catch (error) {
+            console.error('Error fetching profile:', error)
+            toast.error('Failed to load profile')
+        } finally {
+            setIsFetching(false)
+        }
+    }
+
+    // Update form with profile data
+    const updateFormWithProfileData = (profile: { user: ProfileData, bio?: string, location?: string, website?: string }) => {
+        form.reset({
+            username: profile.user.username || "",
+            email: profile.user.email || "",
+            fullName: profile.user.name || "",
+            bio: profile.bio || "",
+            location: profile.location || "",
+            website: profile.website || "",
+        })
+        setAvatarUrl(profile.user.image || null)
+    }
+
+    // Handle image selection
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        // Validate file
+        if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+            toast.error('Please upload a valid image file (JPEG, PNG, or GIF)')
+            return
+        }
+
+        if (file.size > MAX_FILE_SIZE) {
+            toast.error('Image size should be less than 1MB')
+            return
+        }
+
+        // Create preview
+        const tempUrl = URL.createObjectURL(file)
+        setAvatarUrl(tempUrl)
+        setTempImageFile(file)
+    }
+
+    // Handle form submission
+    const onSubmit = async (data: ProfileFormValues) => {
+        if (!userId) {
+            toast.error('User not authenticated')
+            return
+        }
+
         setIsLoading(true)
         try {
-            // TODO: Implement API call to update profile
-            console.log(data)
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000))
+            const formData = new FormData()
+            formData.append('userId', userId)
+            
+            // Add form fields
+            Object.entries(data).forEach(([key, value]) => {
+                if (value) formData.append(key, value)
+            })
+
+            // Add image if changed
+            if (tempImageFile) {
+                formData.append('file', tempImageFile)
+            }
+
+            const response = await axios.post<{ userProfile: { user: ProfileData, bio?: string, location?: string, website?: string } }>(
+                '/api/profile', 
+                formData,
+                { headers: { 'Content-Type': 'multipart/form-data' } }
+            )
+
+            if (response.status !== 200) throw new Error('Failed to update profile')
+
+            const { userProfile } = response.data
+            if (userProfile) {
+                updateFormWithProfileData(userProfile)
+                setTempImageFile(null)
+                toast.success('Profile updated successfully')
+            }
         } catch (error) {
-            console.error(error)
+            console.error('Error updating profile:', error)
+            toast.error('Failed to update profile')
         } finally {
             setIsLoading(false)
         }
     }
 
-    const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (file) {
-            // TODO: Implement file upload to storage service
-            // For now, we'll just create a local URL
-            const url = URL.createObjectURL(file)
-            setAvatarUrl(url)
-        }
+    // Load profile on mount
+    useEffect(() => {
+        fetchProfile()
+    }, [userId])
+
+    // Loading state
+    if (isFetching) {
+        return (
+            <div className="container max-w-2xl mx-auto py-8 px-4 flex items-center justify-center">
+                <Loader className="h-8 w-8 animate-spin" />
+            </div>
+        )
     }
 
     return (
@@ -88,11 +212,20 @@ export default function ProfilePage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
+                    {/* Avatar Section */}
                     <div className="flex flex-col items-center mb-8">
                         <div className="relative">
                             <Avatar className="w-24 h-24">
-                                <AvatarImage src={avatarUrl || "https://github.com/shadcn.png"} />
-                                <AvatarFallback>CN</AvatarFallback>
+                                {avatarUrl ? (
+                                    <AvatarImage 
+                                        src={avatarUrl}
+                                        alt={form.getValues("fullName") || "User"} 
+                                    />
+                                ) : (
+                                    <AvatarFallback>
+                                        {(form.getValues("fullName") || "U").charAt(0).toUpperCase()}
+                                    </AvatarFallback>
+                                )}
                             </Avatar>
                             <label
                                 htmlFor="avatar-upload"
@@ -102,14 +235,16 @@ export default function ProfilePage() {
                                 <input
                                     id="avatar-upload"
                                     type="file"
-                                    accept="image/*"
+                                    accept={ALLOWED_FILE_TYPES.join(',')}
                                     className="hidden"
                                     onChange={handleAvatarChange}
+                                    disabled={isLoading}
                                 />
                             </label>
                         </div>
                     </div>
 
+                    {/* Profile Form */}
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                             <FormField

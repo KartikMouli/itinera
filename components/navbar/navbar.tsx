@@ -14,21 +14,23 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { ThemeToggle } from "../theme-toggle.tsx/theme-toggle"
 import { authClient } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+
 
 const Navbar = () => {
     const router = useRouter()
+    const { data: session } = authClient.useSession()
+    const userImage = session?.user?.image || null
+    const userName = session?.user?.name || "User"
 
     const handleSignOut = async () => {
         await authClient.signOut({
             fetchOptions: {
                 onSuccess: () => {
-                    router.push("/auth/login"); 
+                    router.push("/auth/login")
                 },
             },
-        });
+        })
     }
-
 
     return (
         <nav className="flex h-16 items-center rounded-full gap-4">
@@ -41,22 +43,25 @@ const Navbar = () => {
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="hover:cursor-pointer rounded-full">
                             <Avatar>
-                                <AvatarImage src="https://github.com/shadcn.png" />
-                                <AvatarFallback>
-                                    <User className="size-5" />
-                                </AvatarFallback>
+                                {userImage ? (
+                                    <AvatarImage src={userImage} alt={userName} />
+                                ) : (
+                                    <AvatarFallback>
+                                        {userName.charAt(0).toUpperCase()}
+                                    </AvatarFallback>
+                                )}
                             </Avatar>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" sideOffset={10}>
                         <DropdownMenuItem>
-                            <Link href="/dashboard/profile" className="flex items-center gap-2">
+                            <Link href={`/dashboard/profile`} className="flex items-center gap-2 w-full">
                                 <User className="size-4" />
                                 Profile
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                            <Link href="#" onClick={handleSignOut} className="flex items-center gap-2">
+                            <Link href="/" onClick={handleSignOut} className="flex items-center gap-2 w-full">
                                 <LogOut className="size-4" />
                                 Sign Out
                             </Link>
@@ -65,19 +70,19 @@ const Navbar = () => {
                         <DropdownMenuSeparator />
 
                         <DropdownMenuItem>
-                            <Link href="/dashboard/profile" className="flex items-center gap-2">
+                            <Link href="/" className="flex items-center gap-2 w-full">
                                 <Info className="size-4" />
                                 About
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                            <Link href="#" className="flex items-center gap-2">
+                            <Link href="/" className="flex items-center gap-2 w-full">
                                 <Mail className="size-4" />
                                 Contact
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                            <Link href="#" className="flex items-center gap-2">
+                            <Link href="/" className="flex items-center gap-2 w-full">
                                 <FileText className="size-4" />
                                 Terms and Conditions
                             </Link>

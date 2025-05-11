@@ -57,12 +57,19 @@ export function AppSidebar() {
         });
     }
 
+    const {data:session}=authClient.useSession();
+    const username = session?.user?.name;
+
+
     // User navigation items
     const userItems = [
         {
             title: "Profile",
             url: "/dashboard/profile",
             icon: User,
+            onClick:()=>{
+                router.push(`/dashboard/profile`);
+            }
         },
         {
             title: "Settings",
@@ -155,7 +162,7 @@ export function AppSidebar() {
                             <DropdownMenuTrigger asChild>
                                 <SidebarMenuButton className="flex items-center gap-2 w-full">
                                     <User2 className="size-5" />
-                                    <span>Username</span>
+                                    <span>{username}</span>
                                     <ChevronUp className="ml-auto" />
                                 </SidebarMenuButton>
                             </DropdownMenuTrigger>
