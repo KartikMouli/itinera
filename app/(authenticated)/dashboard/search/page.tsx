@@ -19,9 +19,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Search, MapPin, Calendar, Car, Train, Plane, Bus, History, Plus, IndianRupee } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { DateRangePicker } from "@/components/date-range-picker/date-range-picker"
+import { DateRangePicker } from "@/components/common/date-range-picker/date-range-picker"
 import { DateRange } from "react-day-picker"
-import { Combobox } from "@/components/combbox/combbox"
+import { Combobox } from "@/components/common/combbox/combbox"
 import Link from "next/link"
 
 // Indian cities for autocomplete

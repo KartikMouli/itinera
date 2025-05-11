@@ -13,8 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { useState } from "react"
-import { APIError } from "better-auth"
-import { FaFacebook, FaFacebookF, FaGoogle } from "react-icons/fa"
+import { FaFacebookF, FaGoogle } from "react-icons/fa"
 
 
 const loginSchema = z.object({

@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Search, MapPin, Clock, History } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { PopularPlacesCarousel } from "@/components/popular-places-carousel"
+import { PopularPlacesCarousel } from "@/components/common/popular-places-carousel/popular-places-carousel"
 
 export default function DashboardPage() {
   return (

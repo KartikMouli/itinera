@@ -95,7 +95,10 @@ export default function ProfilePage() {
                 params: { userId }
             })
             
-            if (response.status !== 200) throw new Error('Failed to fetch profile')
+            if (response.status !== 200) {
+                toast.error('Failed to fetch profile')
+                return
+            }
             
             const { userProfile } = response.data
             if (userProfile) {

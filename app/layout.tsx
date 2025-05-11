@@ -21,13 +21,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${outfit.className} font-outfit`} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${outfit.className} font-outfit antialiased`} suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
+
         >
           {children}
           <Toaster position="top-right" />
