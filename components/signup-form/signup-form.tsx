@@ -67,8 +67,12 @@ export function SignupForm({
         }
       }
       );
-    } catch (err) {
-      toast.error("An unexpected error occurred")
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message)
+      } else {
+        toast.error("An unexpected error occurred")
+      }
       setIsSignupLoading(false)
     }
   }
