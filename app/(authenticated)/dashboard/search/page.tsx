@@ -7,11 +7,10 @@ import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, MapPin, Calendar, IndianRupee, Car, Info } from "lucide-react"
 import { toast } from "sonner"
-import { TravelMode, SearchResult } from "@/lib/types"
+import { SearchResult } from "@/lib/types"
 import { authClient } from "@/lib/auth-client"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
@@ -39,7 +38,6 @@ const TRAVEL_MODE_OPTIONS = [
     { value: "BUS", label: "Bus" },
     { value: "CAR", label: "Car" },
     { value: "BIKE", label: "Bike" },
-    { value: "WALK", label: "Walk" }
 ]
 
 export default function SearchPage() {
@@ -84,7 +82,7 @@ export default function SearchPage() {
 
 
             const response = await axios.post("/api/trips/search", formattedData, {
-                headers: { 
+                headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${sessionData.session.token}`
                 },
@@ -113,7 +111,7 @@ export default function SearchPage() {
 
     return (
         <div className="container mx-auto py-6 space-y-6 min-h-screen">
-            <div className="max-w-full md:max-w-3xl mx-auto">
+            <div className="max-w-full md:max-w-4xl mx-auto">
                 <Card>
                     <CardHeader className="pb-4">
                         <CardTitle className="text-lg">Plan Your Trip</CardTitle>
@@ -188,7 +186,7 @@ export default function SearchPage() {
                                 <div className="space-y-1.5">
                                     <Label htmlFor="startDate" className="text-sm">Start Date</Label>
                                     <div className="relative">
-                                     
+
                                         <Input
                                             id="startDate"
                                             type="date"
@@ -208,16 +206,16 @@ export default function SearchPage() {
 
                                 <div className="space-y-1.5">
                                     <Label htmlFor="endDate" className="text-sm">End Date</Label>
-                                
-                                        <Input
-                                            id="endDate"
-                                            type="date"
-                                            className="h-9 [&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:hover:opacity-100 [&::-webkit-datetime-edit]:text-foreground [&::-webkit-datetime-edit-fields-wrapper]:text-foreground"
-                                            min={dateRange.from || new Date().toISOString().split('T')[0]}
-                                            {...register("dateRange.to")}
-                                            onChange={(e) => setValue("dateRange.to", e.target.value)}
-                                        />
-                                    
+
+                                    <Input
+                                        id="endDate"
+                                        type="date"
+                                        className="h-9 [&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:hover:opacity-100 [&::-webkit-datetime-edit]:text-foreground [&::-webkit-datetime-edit-fields-wrapper]:text-foreground"
+                                        min={dateRange.from || new Date().toISOString().split('T')[0]}
+                                        {...register("dateRange.to")}
+                                        onChange={(e) => setValue("dateRange.to", e.target.value)}
+                                    />
+
                                 </div>
                             </div>
 
@@ -237,7 +235,7 @@ export default function SearchPage() {
             </div>
 
             {searchResult && (
-                <div className="max-w-3xl mx-auto">
+                <div className="max-w-4xl mx-auto">
                     <Card>
                         <CardHeader className="pb-4">
                             <div className="flex items-center justify-between">
