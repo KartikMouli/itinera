@@ -10,7 +10,7 @@ export default function DashboardPage() {
       <div className="space-y-1">
         <h1 className="text-2xl font-bold md:text-3xl">Welcome back!</h1>
         <p className="text-sm text-muted-foreground md:text-base">
-          Discover the best of India's travel destinations.
+          Discover the best of India&apos;s travel destinations.
         </p>
       </div>
 

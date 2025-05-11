@@ -1,6 +1,6 @@
 "use client"
 
-import { User, LogOut, Info, Mail, FileText, Loader2 } from "lucide-react"
+import { User, LogOut, Info, Mail, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,

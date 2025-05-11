@@ -1,9 +1,6 @@
 "use client"
 
-import { useParams } from "next/navigation"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, Calendar, IndianRupee, MapPin, Plane, Train, Car, Bus, Bike, CheckCircle2 } from "lucide-react"
+import {  Calendar, IndianRupee, MapPin, Plane, Train,  Bus,  } from "lucide-react"
 import Link from "next/link"
 import { TripCompletionSheet } from "@/components/trip-completion/trip-completion-sheet"
 
@@ -55,8 +52,6 @@ const getTravelIcon = (mode: string) => {
 };
 
 export default function TripDetailsPage() {
-    const params = useParams()
-    const tripId = params.id as string
 
     const handleCompleteTrip = async (rating: number, review: string) => {
         // Here you would typically make an API call to update the trip status
@@ -149,7 +144,6 @@ export default function TripDetailsPage() {
                     {tripDetails.status === "Upcoming" && (
                         <div className="rounded-md border bg-card p-4">
                             <TripCompletionSheet 
-                                tripId={tripDetails.id}
                                 onComplete={handleCompleteTrip}
                             />
                         </div>

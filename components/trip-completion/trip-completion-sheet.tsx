@@ -15,11 +15,10 @@ import {
 } from "@/components/ui/sheet"
 
 interface TripCompletionSheetProps {
-    tripId: string
     onComplete: (rating: number, review: string) => void
 }
 
-export function TripCompletionSheet({ tripId, onComplete }: TripCompletionSheetProps) {
+export function TripCompletionSheet({ onComplete }: TripCompletionSheetProps) {
     const [rating, setRating] = useState(0)
     const [hoverRating, setHoverRating] = useState(0)
     const [review, setReview] = useState("")
@@ -39,7 +38,7 @@ export function TripCompletionSheet({ tripId, onComplete }: TripCompletionSheetP
         try {
             await onComplete(rating, review)
             toast.success("Trip marked as completed!")
-        } catch (error) {
+        } catch {
             toast.error("Failed to complete trip")
         } finally {
             setIsSubmitting(false)

@@ -24,7 +24,7 @@ export default function SignupPage() {
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">
             <p className="text-lg">
-              "Join thousands of travelers who trust Itinera for their journey planning."
+              &quot;Join thousands of travelers who trust Itinera for their journey planning.&quot;
             </p>
             <footer className="text-sm">Travel Community</footer>
           </blockquote>

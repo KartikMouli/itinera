@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { authClient } from "@/lib/auth-client"
+import type { BetterAuthError } from "better-auth"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -52,8 +53,8 @@ export function LoginForm({
       onResponse: () => {
         setIsLoginLoading(false)
       },
-      onError: (error: any) => {
-        toast.error(error.message)
+      onError: (ctx: { error: BetterAuthError }) => {
+        toast.error(ctx.error.message)
         setIsLoginLoading(false)
       },
       onSuccess: () => {
@@ -77,8 +78,8 @@ export function LoginForm({
         onResponse: () => {
           setIsSocialLoginLoading(false)
         },
-        onError: (error: any) => {
-          toast.error(error.message)
+        onError: (ctx: { error: BetterAuthError }) => {
+          toast.error(ctx.error.message)
           setIsSocialLoginLoading(false)
         },
         onSuccess: () => {

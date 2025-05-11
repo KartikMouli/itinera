@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label"
 import { authClient } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
 import { FaFacebookF, FaGoogle } from "react-icons/fa"
+import { BetterAuthError } from "better-auth"
 
 const signupSchema = z.object({
   email: z.string().email(),
@@ -57,8 +58,8 @@ export function SignupForm({
         onResponse: () => {
           setIsSignupLoading(false)
         },
-        onError: (error: any) => {
-          toast.error(error.message)
+        onError: (ctx: { error: BetterAuthError }) => {
+          toast.error(ctx.error.message)
           setIsSignupLoading(false)
         },
         onSuccess: () => {
@@ -85,14 +86,18 @@ export function SignupForm({
         onResponse: () => {
           setIsSocialSignupLoading(false)
         },
-        onError: (error: any) => {
-          toast.error(error.message)
+        onError: (ctx: { error: BetterAuthError }) => {
+          toast.error(ctx.error.message)
           setIsSocialSignupLoading(false)
         }
       }
       )
-    } catch (error: any) {
-      toast.error(error.message)
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message)
+      } else {
+        toast.error("An unexpected error occurred")
+      }
       setIsSocialSignupLoading(false)
     }
 

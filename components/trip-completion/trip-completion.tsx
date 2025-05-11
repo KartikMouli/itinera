@@ -1,15 +1,14 @@
 import { useState } from "react"
-import { Star, StarHalf, StarOff, CheckCircle2 } from "lucide-react"
+import { Star, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 
 interface TripCompletionProps {
-    tripId: string
     onComplete: (rating: number, review: string) => void
 }
 
-export function TripCompletion({ tripId, onComplete }: TripCompletionProps) {
+export function TripCompletion({ onComplete }: TripCompletionProps) {
     const [rating, setRating] = useState(0)
     const [hoverRating, setHoverRating] = useState(0)
     const [review, setReview] = useState("")
@@ -30,7 +29,7 @@ export function TripCompletion({ tripId, onComplete }: TripCompletionProps) {
             // Here you would typically make an API call to update the trip status
             await onComplete(rating, review)
             toast.success("Trip marked as completed!")
-        } catch (error) {
+        } catch {
             toast.error("Failed to complete trip")
         } finally {
             setIsSubmitting(false)

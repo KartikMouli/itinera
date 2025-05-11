@@ -106,7 +106,7 @@ export default function Home() {
             {/* Testimonials */}
             <section className="py-20 bg-gradient-to-b from-muted/20 to-background">
                 <div className="container mx-auto px-4">
-                    <h2 className="text-4xl font-bold text-center mb-16 text-foreground">Don't Take Our Word For It</h2>
+                    <h2 className="text-4xl font-bold text-center mb-16 text-foreground">Don&apos;t Take Our Word For It</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <Card className="border-amber-200/50">
                             <CardContent className="pt-6">
@@ -121,7 +121,7 @@ export default function Home() {
                                     </div>
                                 </div>
                                 <p className="text-muted-foreground">
-                                    "This app transformed my spiritual journey across India. The temple recommendations were spot on!"
+                                    &quot;This app transformed my spiritual journey across India. The temple recommendations were spot on!&quot;
                                 </p>
                             </CardContent>
                         </Card>
@@ -138,7 +138,7 @@ export default function Home() {
                                     </div>
                                 </div>
                                 <p className="text-muted-foreground">
-                                    "The local cuisine recommendations helped me discover authentic Indian flavors I never knew existed!"
+                                    &quot;The local cuisine recommendations helped me discover authentic Indian flavors I never knew existed!&quot;
                                 </p>
                             </CardContent>
                         </Card>
@@ -155,7 +155,7 @@ export default function Home() {
                                     </div>
                                 </div>
                                 <p className="text-muted-foreground">
-                                    "Planning my cultural tour of India has never been easier. The AI suggestions were perfect!"
+                                    &quot;Planning my cultural tour of India has never been easier. The AI suggestions were perfect!&quot;
                                 </p>
                             </CardContent>
                         </Card>
@@ -168,7 +168,7 @@ export default function Home() {
                 <div className="container mx-auto px-4">
                     <h2 className="text-4xl font-bold text-center mb-16 text-foreground">Customized Itineraries for Every Travel Dream</h2>
                     <p className="text-xl text-center mb-16 max-w-3xl mx-auto text-muted-foreground">
-                        Itinera is your ultimate companion for any travel scenario. Whether it's a solo adventure,
+                        Itinera is your ultimate companion for any travel scenario. Whether it&apos;s a solo adventure,
                         a family vacation, or a group expedition, our app tailors every aspect of your journey.
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

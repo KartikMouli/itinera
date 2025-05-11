@@ -10,6 +10,12 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string)
 // Define valid travel modes
 const VALID_TRAVEL_MODES = ["FLIGHT", "TRAIN", "BUS", "CAR", "BIKE", "WALK"] as const
 
+interface ItineraryDay {
+    day: number;
+    activities: string[];
+    notes?: string;
+}
+
 // Input validation schema
 const searchSchema = z.object({
     currentLocation: z.string().min(2),
@@ -136,7 +142,7 @@ export async function POST(req: Request) {
                     budget: validatedData.budget ? parseFloat(validatedData.budget) : null,
                     startDate: validatedData.dateRange?.from || null,
                     endDate: validatedData.dateRange?.to || null,
-                    modeOfTravel: validatedData.modeOfTravel as any || null,
+                    modeOfTravel: validatedData.modeOfTravel as TravelMode || null,
                     numberOfDays: validatedData.dateRange?.from && validatedData.dateRange?.to 
                         ? Math.ceil((validatedData.dateRange.to.getTime() - validatedData.dateRange.from.getTime()) / (1000 * 60 * 60 * 24))
                         : null,
@@ -157,7 +163,7 @@ export async function POST(req: Request) {
                             recommendation.tripRecommendation.budgetBreakdown.activities +
                             recommendation.tripRecommendation.budgetBreakdown.food +
                             recommendation.tripRecommendation.budgetBreakdown.miscellaneous,
-                    modeOfTravel: validatedData.modeOfTravel || recommendation.tripRecommendation.modeOfTravel.toUpperCase() as TravelMode,
+                    modeOfTravel: validatedData.modeOfTravel as TravelMode || recommendation.tripRecommendation.modeOfTravel.toUpperCase() as TravelMode,
                     duration: recommendation.tripRecommendation.duration,
                     activities: recommendation.tripRecommendation.activities,
                     description: recommendation.tripRecommendation.tips.join("\n"),
@@ -165,7 +171,7 @@ export async function POST(req: Request) {
                         connect: { id: savedSearch.id }
                     },
                     itinerary: {
-                        create: recommendation.tripRecommendation.itinerary.map((day: any) => ({
+                        create: recommendation.tripRecommendation.itinerary.map((day: ItineraryDay) => ({
                             id: crypto.randomUUID(),
                             dayNumber: day.day,
                             date: validatedData.dateRange?.from 

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2, MapPin, Calendar, IndianRupee, Car, Info } from "lucide-react"
+import { Loader2, MapPin, Calendar, IndianRupee,  Info } from "lucide-react"
 import { toast } from "sonner"
 import { SearchResult } from "@/lib/types"
 import { authClient } from "@/lib/auth-client"
@@ -39,6 +39,13 @@ const TRAVEL_MODE_OPTIONS = [
     { value: "CAR", label: "Car" },
     { value: "BIKE", label: "Bike" },
 ]
+
+interface ItineraryDay {
+    day: number;
+    date?: string;
+    activities: string[];
+    notes?: string;
+}
 
 export default function SearchPage() {
     const [isLoading, setIsLoading] = useState(false)
@@ -313,7 +320,7 @@ export default function SearchPage() {
                                 <CardContent>
                                     <ScrollArea className="h-[300px] pr-4">
                                         <div className="space-y-3">
-                                            {searchResult.recommendation.itinerary.map((day: any) => (
+                                            {searchResult.recommendation.itinerary.map((day: ItineraryDay) => (
                                                 <Card key={day.day} className="border">
                                                     <CardHeader className="py-2">
                                                         <CardTitle className="text-sm flex items-center gap-2">

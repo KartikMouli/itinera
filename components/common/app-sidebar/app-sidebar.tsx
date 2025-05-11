@@ -1,6 +1,6 @@
 "use client"
 
-import { Home, Search, MapPin, Settings, History, User, LogOut, Inbox, Calendar, ChevronUp, User2, ChevronDown, Loader2 } from "lucide-react"
+import { Home, Search, MapPin, Settings, User, LogOut, ChevronUp, User2, ChevronDown, Loader2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import axios from "axios"
 
