@@ -1,15 +1,11 @@
 "use client"
 
-// React and Next.js imports
+
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-
-// Form handling
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
-
-// UI Components
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -25,13 +21,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Camera, Loader, Loader2 } from "lucide-react"
-
-// Auth and API
 import { authClient } from "@/lib/auth-client"
 import axios from "axios"
 import { toast } from "sonner"
 
-// Types
+
 const profileFormSchema = z.object({
     username: z.string().min(2, {
         message: "Username must be at least 2 characters.",
@@ -64,18 +58,18 @@ const MAX_FILE_SIZE = 1 * 1024 * 1024 // 1MB
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png']
 
 export default function ProfilePage() {
-    // State
+
     const [isLoading, setIsLoading] = useState(false)
     const [isFetching, setIsFetching] = useState(true)
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
     const [tempImageFile, setTempImageFile] = useState<File | null>(null)
 
-    // Auth
+
     const { data: session } = authClient.useSession()
     const userId = session?.user?.id
     const router = useRouter()
 
-    // Form setup
+
     const form = useForm<ProfileFormValues>({
         resolver: zodResolver(profileFormSchema),
         defaultValues: {
@@ -185,6 +179,8 @@ export default function ProfilePage() {
                 setTempImageFile(null)
                 toast.success('Profile updated successfully')
                 
+                //TODO ::any other better way than refresh the page?
+
                 // Refresh the current page to get fresh session data
                 router.refresh()
                 // Small delay to ensure the toast is visible before refresh
@@ -200,12 +196,12 @@ export default function ProfilePage() {
         }
     }
 
-    // Load profile on mount
+
     useEffect(() => {
         fetchProfile()
     }, [userId])
 
-    // Loading state
+
     if (isFetching) {
         return (
             <div className="container max-w-2xl mx-auto py-8 px-4 flex items-center justify-center min-h-[calc(100vh-10rem)]">

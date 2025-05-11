@@ -15,11 +15,11 @@ export default async function AuthenticatedLayout({ children }: { children: Reac
                 <div className="flex min-h-screen w-full text-foreground">
                     <AppSidebar />
                     <div className="flex-1 flex flex-col">
-                        <div className="flex w-full justify-between items-center px-12">
+                        <div className="flex w-full justify-between items-center px-6 md:px-12">
                             <SidebarTrigger className="hover:cursor-pointer" />
                             <Navbar />
                         </div>
-                        <main className="flex-1 px-12">
+                        <main className="px-6 md:px-12">
                             {children}
                         </main>
                         <Footer />

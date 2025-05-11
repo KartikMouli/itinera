@@ -1,351 +1,369 @@
 "use client"
 
 import { useState } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import * as z from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 import { Button } from "@/components/ui/button"
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Search, MapPin, Calendar, Car, Train, Plane, Bus, History, Plus, IndianRupee } from "lucide-react"
+import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Loader2, MapPin, Calendar, IndianRupee, Car, Info } from "lucide-react"
+import { toast } from "sonner"
+import { TravelMode, SearchResult } from "@/lib/types"
+import { authClient } from "@/lib/auth-client"
+import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
-import { DateRangePicker } from "@/components/common/date-range-picker/date-range-picker"
-import { DateRange } from "react-day-picker"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import axios from "axios"
 import { Combobox } from "@/components/common/combbox/combbox"
-import Link from "next/link"
 
-// Indian cities for autocomplete
-const indianCities = [
-    { value: "mumbai", label: "Mumbai" },
-    { value: "delhi", label: "Delhi" },
-    { value: "bangalore", label: "Bangalore" },
-    { value: "hyderabad", label: "Hyderabad" },
-    { value: "chennai", label: "Chennai" },
-    { value: "kolkata", label: "Kolkata" },
-    { value: "pune", label: "Pune" },
-    { value: "ahmedabad", label: "Ahmedabad" },
-    { value: "jaipur", label: "Jaipur" },
-    { value: "lucknow", label: "Lucknow" },
-    { value: "kochi", label: "Kochi" },
-    { value: "goa", label: "Goa" },
-    { value: "varanasi", label: "Varanasi" },
-    { value: "agra", label: "Agra" },
-    { value: "udaipur", label: "Udaipur" },
-    { value: "jodhpur", label: "Jodhpur" },
-    { value: "shimla", label: "Shimla" },
-    { value: "manali", label: "Manali" },
-    { value: "darjeeling", label: "Darjeeling" },
-    { value: "mysore", label: "Mysore" },
-    { value: "pondicherry", label: "Pondicherry" },
-    { value: "amritsar", label: "Amritsar" },
-    { value: "rishikesh", label: "Rishikesh" },
-    { value: "kerala", label: "Kerala" },
-    { value: "ladakh", label: "Ladakh" },
-    { value: "andaman", label: "Andaman" },
-    { value: "sikkim", label: "Sikkim" }
-]
-
-// Define the form schema
-const searchFormSchema = z.object({
-    currentLocation: z.string().min(2, {
-        message: "Current location must be at least 2 characters.",
-    }),
-    destination: z.string().min(2, {
-        message: "Destination must be at least 2 characters.",
-    }),
+const searchSchema = z.object({
+    currentLocation: z.string().min(2, "Current location is required"),
+    destination: z.string().min(2, "Destination is required"),
     budget: z.string().optional(),
     dateRange: z.object({
-        from: z.date().optional(),
-        to: z.date().optional(),
+        from: z.string().optional(),
+        to: z.string().optional(),
     }).optional(),
     modeOfTravel: z.string().optional(),
 })
 
-type SearchFormValues = z.infer<typeof searchFormSchema>
+type SearchFormData = z.infer<typeof searchSchema>
 
-// Mock data for saved searches with Indian destinations
-const savedSearches = [
-    {
-        id: "1",
-        currentLocation: "Mumbai",
-        destination: "Goa",
-        budget: "₹25,000",
-        numberOfDays: "5",
-        modeOfTravel: "train",
-        date: "2024-03-15",
-    },
-    {
-        id: "2",
-        currentLocation: "Delhi",
-        destination: "Manali",
-        budget: "₹15,000",
-        numberOfDays: "4",
-        modeOfTravel: "bus",
-        date: "2024-03-10",
-    },
-    {
-        id: "3",
-        currentLocation: "Bangalore",
-        destination: "Kerala",
-        budget: "₹30,000",
-        numberOfDays: "7",
-        modeOfTravel: "plane",
-        date: "2024-03-05",
-    },
-]
-
-const travelModes = [
-    { value: "plane", label: "Plane" },
-    { value: "train", label: "Train" },
-    { value: "car", label: "Car" },
-    { value: "bus", label: "Bus" },
-    { value: "bike", label: "Bike" },
+// Define travel modes as options for combobox
+const TRAVEL_MODE_OPTIONS = [
+    { value: "FLIGHT", label: "Flight" },
+    { value: "TRAIN", label: "Train" },
+    { value: "BUS", label: "Bus" },
+    { value: "CAR", label: "Car" },
+    { value: "BIKE", label: "Bike" },
+    { value: "WALK", label: "Walk" }
 ]
 
 export default function SearchPage() {
     const [isLoading, setIsLoading] = useState(false)
-    const [dateRange, setDateRange] = useState<DateRange | undefined>()
+    const [searchResult, setSearchResult] = useState<SearchResult | null>(null)
+    const { data: sessionData } = authClient.useSession()
 
-    const form = useForm<SearchFormValues>({
-        resolver: zodResolver(searchFormSchema),
+    const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<SearchFormData>({
+        resolver: zodResolver(searchSchema),
         defaultValues: {
             currentLocation: "",
             destination: "",
             budget: "",
-            dateRange: undefined,
-            modeOfTravel: "",
-        },
+            modeOfTravel: undefined,
+            dateRange: {
+                from: "",
+                to: ""
+            }
+        }
     })
 
-    async function onSubmit(data: SearchFormValues) {
-        setIsLoading(true)
+    const dateRange = watch("dateRange") || { from: "", to: "" }
+
+    const onSubmit = async (data: SearchFormData) => {
         try {
-            // TODO: Implement API call to search trips
-            console.log(data)
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000))
+            if (!sessionData?.user?.id) {
+                toast.error("Please sign in to search trips")
+                return
+            }
+
+            setIsLoading(true)
+            // Convert string dates to Date objects for the API
+            const formattedData = {
+                ...data,
+                userId: sessionData.user.id,
+                dateRange: data.dateRange ? {
+                    from: data.dateRange.from ? new Date(data.dateRange.from) : undefined,
+                    to: data.dateRange.to ? new Date(data.dateRange.to) : undefined
+                } : undefined
+            }
+
+
+
+            const response = await axios.post("/api/trips/search", formattedData, {
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${sessionData.session.token}`
+                },
+            })
+
+            if (response.status !== 200) {
+                const error = response.data
+                console.error('Server error response:', error)
+                throw new Error(error.error || "Failed to search trips")
+            }
+
+            const result = response.data
+            setSearchResult(result)
+            toast.success("Trip recommendations generated!")
         } catch (error) {
-            console.error(error)
+            console.error("Search error:", error)
+            if (error instanceof Error) {
+                toast.error(error.message)
+            } else {
+                toast.error("Failed to search trips")
+            }
         } finally {
             setIsLoading(false)
         }
     }
 
-    const getTravelIcon = (mode: string) => {
-        switch (mode) {
-            case "plane":
-                return <Plane className="h-4 w-4" />
-            case "train":
-                return <Train className="h-4 w-4" />
-            case "car":
-                return <Car className="h-4 w-4" />
-            case "bus":
-                return <Bus className="h-4 w-4" />
-            default:
-                return null
-        }
-    }
-
     return (
-        <div className="container max-w-4xl mx-auto py-8 px-4 space-y-8">
-            {/* Search Form */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Plan Your Indian Adventure</CardTitle>
-                    <CardDescription>
-                        Discover the beauty of India with personalized travel recommendations.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <FormField
-                                    control={form.control}
-                                    name="currentLocation"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Current Location</FormLabel>
-                                            <FormControl>
-                                                <Combobox
-                                                    value={field.value}
-                                                    onChange={field.onChange}
-                                                    options={indianCities}
-                                                    placeholder="Where are you now?"
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+        <div className="container mx-auto py-6 space-y-6 min-h-screen">
+            <div className="max-w-full md:max-w-3xl mx-auto">
+                <Card>
+                    <CardHeader className="pb-4">
+                        <CardTitle className="text-lg">Plan Your Trip</CardTitle>
+                        <CardDescription>
+                            Enter your travel details to get personalized trip recommendations
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="currentLocation" className="text-sm">Current Location</Label>
+                                    <div className="relative">
+                                        <MapPin className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                            id="currentLocation"
+                                            placeholder="e.g., Mumbai"
+                                            className="pl-8 h-9"
+                                            {...register("currentLocation")}
+                                        />
+                                    </div>
+                                    {errors.currentLocation && (
+                                        <p className="text-xs text-red-500">{errors.currentLocation.message}</p>
                                     )}
-                                />
+                                </div>
 
-                                <FormField
-                                    control={form.control}
-                                    name="destination"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Destination</FormLabel>
-                                            <FormControl>
-                                                <Combobox
-                                                    value={field.value}
-                                                    onChange={field.onChange}
-                                                    options={indianCities}
-                                                    placeholder="Where do you want to go?"
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="destination" className="text-sm">Destination</Label>
+                                    <div className="relative">
+                                        <MapPin className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                            id="destination"
+                                            placeholder="e.g., Goa"
+                                            className="pl-8 h-9"
+                                            {...register("destination")}
+                                        />
+                                    </div>
+                                    {errors.destination && (
+                                        <p className="text-xs text-red-500">{errors.destination.message}</p>
                                     )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="budget"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Budget (Optional)</FormLabel>
-                                            <FormControl>
-                                                <div className="relative">
-                                                    <IndianRupee className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                                                    <Input placeholder="Your budget in INR" className="pl-10" {...field} />
-                                                </div>
-                                            </FormControl>
-                                            <FormDescription>
-                                                Enter your total budget for the trip in Indian Rupees
-                                            </FormDescription>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="dateRange"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Travel Dates (Optional)</FormLabel>
-                                            <FormControl>
-                                                <div className="relative">
-                                                    <DateRangePicker
-                                                        date={dateRange}
-                                                        onSelect={(range) => {
-                                                            setDateRange(range)
-                                                            field.onChange(range)
-                                                        }}
-                                                    />
-                                                </div>
-                                            </FormControl>
-                                            <FormDescription>
-                                                Select your travel dates
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="modeOfTravel"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Mode of Travel (Optional)</FormLabel>
-                                            <FormControl>
-                                                <Combobox
-                                                    value={field.value}
-                                                    onChange={field.onChange}
-                                                    options={travelModes}
-                                                    placeholder="Select travel mode"
-                                                />
-                                            </FormControl>
-                                            <FormDescription>
-                                                Choose your preferred mode of transportation
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                </div>
                             </div>
 
-                            <Button type="submit" className="w-full" disabled={isLoading}>
-                                {isLoading ? (
-                                    <Search className="mr-2 h-4 w-4 animate-spin" />
-                                ) : (
-                                    <Search className="mr-2 h-4 w-4" />
-                                )}
-                                Search Trips
-                            </Button>
-                        </form>
-                    </Form>
-                </CardContent>
-            </Card>
-
-            {/* Saved Searches */}
-            <Card>
-                <CardHeader>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <CardTitle>Saved Searches</CardTitle>
-                            <CardDescription>
-                                Your previous Indian travel searches
-                            </CardDescription>
-                        </div>
-                        <Link href="/dashboard/search/all">
-                            <Button variant="outline" size="sm">
-                                <History className="mr-2 h-4 w-4" />
-                                View All
-                            </Button>
-                        </Link>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-4">
-                        {savedSearches.map((search) => (
-                            <Card key={search.id} className="p-4">
-                                <div className="flex items-center justify-between">
-                                    <div className="space-y-1">
-                                        <div className="flex items-center gap-2">
-                                            <h4 className="font-semibold">{search.currentLocation}</h4>
-                                            <span>→</span>
-                                            <h4 className="font-semibold">{search.destination}</h4>
-                                        </div>
-                                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                            <span className="flex items-center gap-1">
-                                                <Calendar className="h-3 w-3" />
-                                                {search.numberOfDays} days
-                                            </span>
-                                            <span className="flex items-center gap-1">
-                                                <IndianRupee className="h-3 w-3" />
-                                                {search.budget}
-                                            </span>
-                                            <span className="flex items-center gap-1">
-                                                {getTravelIcon(search.modeOfTravel)}
-                                                {search.modeOfTravel}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Badge variant="secondary">{search.date}</Badge>
-                                        <Link href={`/dashboard/search/${search.id}`}>
-                                            <Button variant="ghost" size="icon">
-                                                <Plus className="h-4 w-4" />
-                                            </Button>
-                                        </Link>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="budget" className="text-sm">Budget (₹)</Label>
+                                    <div className="relative">
+                                        <IndianRupee className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                            id="budget"
+                                            type="number"
+                                            placeholder="e.g., 50000"
+                                            className="pl-8 h-9"
+                                            {...register("budget")}
+                                        />
                                     </div>
                                 </div>
+
+                                <div className="w-full space-y-1.5">
+                                    <Label htmlFor="modeOfTravel" className="text-sm">Mode of Travel</Label>
+                                    <Combobox
+                                        value={watch("modeOfTravel")}
+                                        onChange={(value) => setValue("modeOfTravel", value)}
+                                        options={TRAVEL_MODE_OPTIONS}
+                                        placeholder="Select mode of travel"
+                                        className="w-full"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="startDate" className="text-sm">Start Date</Label>
+                                    <div className="relative">
+                                     
+                                        <Input
+                                            id="startDate"
+                                            type="date"
+                                            className=" h-9 [&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:hover:opacity-100 [&::-webkit-datetime-edit]:text-foreground [&::-webkit-datetime-edit-fields-wrapper]:text-foreground"
+                                            min={new Date().toISOString().split('T')[0]}
+                                            {...register("dateRange.from")}
+                                            onChange={(e) => {
+                                                const value = e.target.value
+                                                setValue("dateRange.from", value)
+                                                if (value && dateRange.to && value > dateRange.to) {
+                                                    setValue("dateRange.to", value)
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="endDate" className="text-sm">End Date</Label>
+                                
+                                        <Input
+                                            id="endDate"
+                                            type="date"
+                                            className="h-9 [&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:hover:opacity-100 [&::-webkit-datetime-edit]:text-foreground [&::-webkit-datetime-edit-fields-wrapper]:text-foreground"
+                                            min={dateRange.from || new Date().toISOString().split('T')[0]}
+                                            {...register("dateRange.to")}
+                                            onChange={(e) => setValue("dateRange.to", e.target.value)}
+                                        />
+                                    
+                                </div>
+                            </div>
+
+                            <Button type="submit" className="w-full h-9" disabled={isLoading}>
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Generating Recommendations...
+                                    </>
+                                ) : (
+                                    "Search Trips"
+                                )}
+                            </Button>
+                        </form>
+                    </CardContent>
+                </Card>
+            </div>
+
+            {searchResult && (
+                <div className="max-w-3xl mx-auto">
+                    <Card>
+                        <CardHeader className="pb-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle className="text-lg">Trip Recommendations</CardTitle>
+                                    <CardDescription className="mt-1">
+                                        Your personalized trip plan from {searchResult.trip.from} to {searchResult.trip.to}
+                                    </CardDescription>
+                                </div>
+                                <Badge variant="secondary" className="text-sm px-3 py-1">
+                                    {searchResult.recommendation.duration} Days
+                                </Badge>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <Card>
+                                    <CardHeader className="pb-2">
+                                        <CardTitle className="text-base flex items-center gap-2">
+                                            <IndianRupee className="h-4 w-4" />
+                                            Budget Breakdown
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-2">
+                                            {Object.entries(searchResult.recommendation.budgetBreakdown).map(([category, amount]) => (
+                                                <div key={category} className="flex justify-between items-center text-sm">
+                                                    <span className="capitalize text-muted-foreground">{category}</span>
+                                                    <span className="font-medium">₹{Number(amount).toLocaleString()}</span>
+                                                </div>
+                                            ))}
+                                            <Separator className="my-2" />
+                                            <div className="flex justify-between items-center text-sm font-semibold">
+                                                <span>Total Budget</span>
+                                                <span>₹{searchResult.trip.budget?.toLocaleString()}</span>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+
+                                <Card>
+                                    <CardHeader className="pb-2">
+                                        <CardTitle className="text-base flex items-center gap-2">
+                                            <Info className="h-4 w-4" />
+                                            Trip Details
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-3">
+                                            <div className="flex justify-between items-center text-sm">
+                                                <span className="text-muted-foreground">Mode of Travel</span>
+                                                <Badge variant="outline" className="capitalize text-xs">
+                                                    {searchResult.recommendation.modeOfTravel.toLowerCase()}
+                                                </Badge>
+                                            </div>
+                                            <div className="flex justify-between items-center text-sm">
+                                                <span className="text-muted-foreground">Duration</span>
+                                                <span className="font-medium">{searchResult.recommendation.duration} days</span>
+                                            </div>
+                                            <div className="flex justify-between items-center text-sm">
+                                                <span className="text-muted-foreground">Travel Dates</span>
+                                                <span className="font-medium">
+                                                    {searchResult.trip.startDate ? new Date(searchResult.trip.startDate).toLocaleDateString() : 'Not set'} - {searchResult.trip.endDate ? new Date(searchResult.trip.endDate).toLocaleDateString() : 'Not set'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </div>
+
+                            <Card>
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-base">Itinerary</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <ScrollArea className="h-[300px] pr-4">
+                                        <div className="space-y-3">
+                                            {searchResult.recommendation.itinerary.map((day: any) => (
+                                                <Card key={day.day} className="border">
+                                                    <CardHeader className="py-2">
+                                                        <CardTitle className="text-sm flex items-center gap-2">
+                                                            <Calendar className="h-4 w-4" />
+                                                            Day {day.day}
+                                                            {day.date && (
+                                                                <span className="text-xs text-muted-foreground font-normal">
+                                                                    ({new Date(day.date).toLocaleDateString()})
+                                                                </span>
+                                                            )}
+                                                        </CardTitle>
+                                                    </CardHeader>
+                                                    <CardContent>
+                                                        <ul className="list-disc list-inside space-y-1 text-sm">
+                                                            {day.activities.map((activity: string, index: number) => (
+                                                                <li key={index} className="text-muted-foreground">{activity}</li>
+                                                            ))}
+                                                        </ul>
+                                                        {day.notes && (
+                                                            <p className="mt-2 text-xs text-muted-foreground italic">{day.notes}</p>
+                                                        )}
+                                                    </CardContent>
+                                                </Card>
+                                            ))}
+                                        </div>
+                                    </ScrollArea>
+                                </CardContent>
                             </Card>
-                        ))}
-                    </div>
-                </CardContent>
-            </Card>
+
+                            <Card>
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-base flex items-center gap-2">
+                                        <Info className="h-4 w-4" />
+                                        Travel Tips
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <ul className="list-disc list-inside space-y-1 text-sm">
+                                        {searchResult.recommendation.tips.map((tip: string, index: number) => (
+                                            <li key={index} className="text-muted-foreground">{tip}</li>
+                                        ))}
+                                    </ul>
+                                </CardContent>
+                            </Card>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
         </div>
     )
 } 

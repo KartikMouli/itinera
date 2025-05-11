@@ -24,6 +24,8 @@ model User {
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
+  trips         Trip[]
+  savedSearches SavedSearch[] // Add relation to saved searches
 
   username        String?
   displayUsername String?
@@ -91,5 +93,109 @@ model UserProfile {
   createdAt      DateTime
   updatedAt      DateTime
 
+  trips          Trip[]    // Add relation to trips
+
   @@map("user_profile")
+}
+
+// Trip model for storing trip information
+model Trip {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "trip_user_fkey")
+  userProfile UserProfile @relation(fields: [userId], references: [userId], onDelete: Cascade, map: "trip_user_profile_fkey")
+
+  // Basic trip information (matching UI requirements)
+  from        String
+  to          String
+  startDate   DateTime?
+  endDate     DateTime?
+  status      TripStatus @default(PLANNED)
+  budget      Float?
+  modeOfTravel TravelMode? 
+  duration    Int?      // Duration in days
+  
+  // Trip details (matching UI requirements)
+  description String?
+  rating      Float?
+  review      String?
+  activities  String[]  // Array of activity names for quick access
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  itinerary   ItineraryDay[]
+  savedSearch SavedSearch? // Relation to saved search if this trip was created from a search
+
+  @@index([userId])
+  @@index([status])
+  @@index([from, to])
+  @@map("trip")
+}
+
+// SavedSearch model for storing search history
+model SavedSearch {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Search parameters
+  currentLocation String
+  destination     String
+  budget          Float?
+  startDate       DateTime?
+  endDate         DateTime?
+  modeOfTravel    TravelMode?
+  numberOfDays    Int?
+  
+  // Generated trip if search was converted to trip
+  tripId          String?  @unique
+  trip            Trip?    @relation(fields: [tripId], references: [id])
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@index([currentLocation, destination])
+  @@map("saved_search")
+}
+
+// ItineraryDay model for storing daily itinerary
+model ItineraryDay {
+  id          String   @id @default(cuid())
+  tripId      String
+  trip        Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  
+  dayNumber   Int
+  date        DateTime
+  activities  String[] // Array of activities for this day
+  notes       String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([tripId, dayNumber])
+  @@index([tripId])
+  @@map("itinerary_day")
+}
+
+// Enums
+enum TripStatus {
+  PLANNED
+  UPCOMING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum TravelMode {
+  FLIGHT
+  TRAIN
+  BUS
+  CAR
+  BIKE
+  WALK
 }

@@ -1,6 +1,8 @@
 "use client"
 
-import { Home, Search, MapPin, Settings, History, User, LogOut, Inbox, Calendar, ChevronUp, User2, ChevronDown } from "lucide-react"
+import { Home, Search, MapPin, Settings, History, User, LogOut, Inbox, Calendar, ChevronUp, User2, ChevronDown, Loader2 } from "lucide-react"
+import { useEffect, useState } from "react"
+import axios from "axios"
 
 import {
     Sidebar,
@@ -19,6 +21,13 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../../ui/co
 import { useRouter } from "next/navigation"
 import { authClient } from "@/lib/auth-client"
 
+interface RecentTrip {
+    id: string;
+    from: string;
+    to: string;
+    date: string;
+    status: string;
+}
 
 // Main navigation items
 const mainItems = [
@@ -36,16 +45,33 @@ const mainItems = [
         title: "My Trips",
         url: "/dashboard/trips",
         icon: MapPin,
-    },
-    {
-        title: "Trip History",
-        url: "/dashboard/history",
-        icon: History,
-    },
+    }
 ]
 
 export function AppSidebar() {
     const router = useRouter()
+    const [recentTrips, setRecentTrips] = useState<RecentTrip[]>([]);
+    const [isLoadingTrips, setIsLoadingTrips] = useState(true);
+    const { data: session } = authClient.useSession();
+
+    useEffect(() => {
+        async function fetchRecentTrips() {
+            if (!session?.user?.id) return;
+
+            try {
+                const response = await axios.get(`/api/trips/recent?userId=${session.user.id}`);
+                if (response.status === 200) {
+                    setRecentTrips(response.data);
+                }
+            } catch (error) {
+                console.error('Error fetching recent trips:', error);
+            } finally {
+                setIsLoadingTrips(false);
+            }
+        }
+
+        fetchRecentTrips();
+    }, [session?.user?.id]);
 
     const handleSignOut = async () => {
         await authClient.signOut({
@@ -57,9 +83,7 @@ export function AppSidebar() {
         });
     }
 
-    const {data:session}=authClient.useSession();
     const username = session?.user?.name;
-
 
     // User navigation items
     const userItems = [
@@ -67,7 +91,7 @@ export function AppSidebar() {
             title: "Profile",
             url: "/dashboard/profile",
             icon: User,
-            onClick:()=>{
+            onClick: () => {
                 router.push(`/dashboard/profile`);
             }
         },
@@ -124,30 +148,31 @@ export function AppSidebar() {
                         <CollapsibleContent>
                             <SidebarGroupContent>
                                 <SidebarMenu>
-                                    <SidebarMenuItem>
-                                        <SidebarMenuButton asChild>
-                                            <a href="/dashboard/search/1" className="flex items-center gap-2">
-                                                <MapPin className="size-5" />
-                                                <span>Mumbai → Goa</span>
-                                            </a>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                    <SidebarMenuItem>
-                                        <SidebarMenuButton asChild>
-                                            <a href="/dashboard/search/2" className="flex items-center gap-2">
-                                                <MapPin className="size-5" />
-                                                <span>Delhi → Manali</span>
-                                            </a>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                    <SidebarMenuItem>
-                                        <SidebarMenuButton asChild>
-                                            <a href="/dashboard/search/3" className="flex items-center gap-2">
-                                                <MapPin className="size-5" />
-                                                <span>Bangalore → Kerala</span>
-                                            </a>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
+                                    {isLoadingTrips ? (
+                                        <div className="flex items-center justify-center py-2">
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                        </div>
+                                    ) : recentTrips.length > 0 ? (
+                                        recentTrips.map((trip) => (
+                                            <div key={trip.id} className="mb-2">
+                                                <SidebarMenuItem>
+                                                    <SidebarMenuButton asChild>
+                                                        <a href={`/dashboard/trips/${trip.id}`} className="flex items-center gap-3">
+                                                            <MapPin className="size-5" />
+                                                            <div className="flex flex-col">
+                                                                <span>{trip.from} → {trip.to}</span>
+                                                                <span className="text-xs text-muted-foreground">{trip.date}</span>
+                                                            </div>
+                                                        </a>
+                                                    </SidebarMenuButton>
+                                                </SidebarMenuItem>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                                            No recent trips
+                                        </div>
+                                    )}
                                 </SidebarMenu>
                             </SidebarGroupContent>
                         </CollapsibleContent>
@@ -174,7 +199,7 @@ export function AppSidebar() {
                                 }}
                             >
                                 {userItems.map((item) => (
-                                    <DropdownMenuItem key={item.title} className="flex items-center gap-2" onClick={item.onClick}>
+                                    <DropdownMenuItem key={item.title} className="flex items-center gap-2 w-full hover:cursor-pointer" onClick={item.onClick}>
                                         <item.icon className="size-4" />
                                         <span>{item.title}</span>
                                     </DropdownMenuItem>
