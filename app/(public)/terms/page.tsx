@@ -1,9 +1,4 @@
-import { Metadata } from "next"
 
-export const metadata: Metadata = {
-  title: "Terms of Service | Itinera",
-  description: "Terms of Service for Itinera - Your travel companion",
-}
 
 export default function TermsOfService() {
   return (
