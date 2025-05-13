@@ -10,7 +10,7 @@ export default function PrivacyPolicy() {
                 <section>
                     <h2 className="text-2xl font-semibold mb-4">1. Hey There!</h2>
                     <p className="text-gray-700">
-                        Welcome to Itinera! We're not your typical boring travel app - we&apos;re the cool kids who actually care about your privacy!
+                        Welcome to Itinera! We&apos;re not your typical boring travel app - we&apos;re the cool kids who actually care about your privacy!
                         While we can&apos;t promise to make your travel plans perfect (we&apos;re good, but we&apos;re not magicians), we can promise to treat
                         your data with the respect it deserves. No creepy stalking here - we&apos;re not your ex!
                     </p>
@@ -52,7 +52,7 @@ export default function PrivacyPolicy() {
                 </section>
 
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">5. Your Rights (Because You're the Boss!)</h2>
+                    <h2 className="text-2xl font-semibold mb-4">5. Your Rights (Because You&apos;re the Boss!)</h2>
                     <p className="text-gray-700 mb-4">
                         You&apos;re in control! Here&apos;s what you can do:
                     </p>

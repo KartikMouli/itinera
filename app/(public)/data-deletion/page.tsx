@@ -26,7 +26,7 @@ export default function DataDeletion() {
                         </CardHeader>
                         <CardContent>
                             <p className="text-gray-700 mb-4">
-                                Send an email to <span className="font-semibold">kartikmouli0@gmail.com</span> with the subject line "Data Deletion Request" and include:
+                                Send an email to <span className="font-semibold">kartikmouli0@gmail.com</span> with the subject line &quot;Data Deletion Request&quot; and include:
                             </p>
                             <ul className="list-disc pl-6 text-gray-700 space-y-2">
                                 <li>Your full name</li>

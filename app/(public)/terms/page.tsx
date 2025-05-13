@@ -22,7 +22,7 @@ export default function TermsOfService() {
           <ul className="list-disc pl-6 text-gray-700 space-y-2">
             <li>Use it to plan your awesome adventures</li>
             <li>Share your travel plans with friends (because bragging rights are important!)</li>
-            <li>Save your favorite destinations (we won't judge your travel taste)</li>
+            <li>Save your favorite destinations (we won&apos;t judge your travel taste)</li>
             <li>Use it on any device you own (yes, even that ancient tablet in your drawer)</li>
           </ul>
         </section>
@@ -71,7 +71,7 @@ export default function TermsOfService() {
         </section>
 
         <section>
-          <h2 className="text-2xl font-semibold mb-4">7. The "We&apos;re Not Responsible For" Section</h2>
+          <h2 className="text-2xl font-semibold mb-4">7. The &quot;We&apos;re Not Responsible For&quot; Section</h2>
           <p className="text-gray-700 mb-4">
             We&apos;re not responsible for:
           </p>
