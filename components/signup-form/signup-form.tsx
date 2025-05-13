@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { authClient } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
-import { FaFacebookF, FaGoogle } from "react-icons/fa"
+import { FaGoogle } from "react-icons/fa"
 import { BetterAuthError } from "better-auth"
 
 const signupSchema = z.object({
@@ -77,7 +77,7 @@ export function SignupForm({
     }
   }
 
-  const handleSocialSignup = async (provider: "google" | "facebook") => {
+  const handleSocialSignup = async (provider: "google") => {
     try {
 
       await authClient.signIn.social({
@@ -184,19 +184,6 @@ export function SignupForm({
             </span>
           </div>
           <div className="grid gap-4 sm:grid-cols-1">
-            <Button variant="outline" type="button" className="w-full" onClick={() => handleSocialSignup("facebook")} disabled={isSocialSignupLoading || isSignupLoading}>
-            {isSocialSignupLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing up...
-                </>
-              ) : (
-                <>
-                  <FaFacebookF className="h-4 w-4" />
-                  Continue with Facebook
-                </>
-              )}
-            </Button>
             <Button variant="outline" type="button" className="w-full" onClick={() => handleSocialSignup("google")} disabled={isSocialSignupLoading || isSignupLoading}>
               {isSocialSignupLoading ? (
                 <>

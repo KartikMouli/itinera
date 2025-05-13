@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { useState } from "react"
-import { FaFacebookF, FaGoogle } from "react-icons/fa"
+import { FaGoogle } from "react-icons/fa"
 
 
 const loginSchema = z.object({
@@ -30,7 +30,7 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
   const [isLoginLoading, setIsLoginLoading] = useState(false)
   const [isSocialLoginLoading, setIsSocialLoginLoading] = useState(false)
-  const [provider, setProvider] = useState<"facebook" | "google">("facebook")
+  const [provider, setProvider] = useState<"google">("google")
   const router = useRouter()
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -65,7 +65,7 @@ export function LoginForm({
 
   }
 
-  const handleSocialLogin = async (provider: "google" | "facebook") => {
+  const handleSocialLogin = async (provider: "google") => {
     setProvider(provider)
     await authClient.signIn.social({
       provider: provider,
@@ -155,19 +155,6 @@ export function LoginForm({
             </span>
           </div>
           <div className="grid gap-4 grid-cols-1">
-          <Button variant="outline" type="button" className="w-full" onClick={() => handleSocialLogin("facebook")} disabled={isSocialLoginLoading || isLoginLoading}>
-            {isSocialLoginLoading && provider === "facebook" ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Logging in...
-                </>
-              ) : (
-                <>
-                  <FaFacebookF className="h-4 w-4" />
-                  Continue with Facebook
-                </>
-              )}
-            </Button>
             <Button variant="outline" type="button" className="w-full flex items-center justify-center gap-2" onClick={() => handleSocialLogin("google")} disabled={isSocialLoginLoading || isLoginLoading}>
               {isSocialLoginLoading && provider === "google" ? (
                 <>
