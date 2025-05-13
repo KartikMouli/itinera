@@ -17,7 +17,7 @@ export default function DataDeletion() {
                 <section>
                     <h2 className="text-2xl font-semibold mb-4">How to Delete Your Data</h2>
                     <p className="text-gray-700 mb-4">
-                        We respect your privacy and make it easy to delete your data from Itinera. Here's how you can do it:
+                        We respect your privacy and make it easy to delete your data from Itinera. Here&apos;s how you can do it:
                     </p>
                     <Card>
                         <CardHeader>
@@ -32,7 +32,7 @@ export default function DataDeletion() {
                                 <li>Your full name</li>
                                 <li>The email address associated with your account</li>
                                 <li>Your Facebook ID (if you used Facebook login)</li>
-                                <li>Any specific data you want deleted (or "all data" for complete deletion)</li>
+                                <li>Any specific data you want deleted (or &quot;all data&quot; for complete deletion)</li>
                             </ul>
                         </CardContent>
                     </Card>
@@ -47,9 +47,9 @@ export default function DataDeletion() {
                         </CardHeader>
                         <CardContent>
                             <ul className="list-disc pl-6 text-gray-700 space-y-2">
-                                <li>We'll send you a confirmation email within 48 hours</li>
+                                <li>We&apos;ll send you a confirmation email within 48 hours</li>
                                 <li>Your data will be permanently deleted within 30 days</li>
-                                <li>You'll receive a final confirmation when the deletion is complete</li>
+                                <li>You&apos;ll receive a final confirmation when the deletion is complete</li>
                                 <li>Any backups containing your data will be updated within 90 days</li>
                             </ul>
                         </CardContent>
@@ -68,7 +68,7 @@ export default function DataDeletion() {
                                 <li>Your personal information (name, email, etc.)</li>
                                 <li>Your travel preferences and saved destinations</li>
                                 <li>Your activity history</li>
-                                <li>Any content you've created</li>
+                                <li>Any content you&apos;ve created</li>
                                 <li>Your authentication data (including Facebook OAuth tokens)</li>
                             </ul>
                         </CardContent>
