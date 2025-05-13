@@ -25,7 +25,7 @@ export default function RootLayout({
       <body className={`${outfit.className} font-outfit antialiased`} suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
 
