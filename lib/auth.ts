@@ -18,7 +18,7 @@ export const auth = betterAuth({
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
         }
     },
-    trustedOrigins: ["https://itinera.vercel.app","https://itinera-six.vercel.app"],
+    trustedOrigins: ["https://travelitinera.vercel.app"],
     plugins: [ 
         username() 
     ] 
