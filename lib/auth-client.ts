@@ -2,7 +2,7 @@ import { createAuthClient } from "better-auth/react"
 import { usernameClient } from "better-auth/client/plugins"
 export const authClient = createAuthClient({
     /** The base URL of the server (optional if you're using the same domain) */
-    baseURL: "https://itinera.vercel.app",
+    baseURL: "https://itinera-six.vercel.app",
     plugins: [ 
         usernameClient() 
     ] 
